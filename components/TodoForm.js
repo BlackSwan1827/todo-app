@@ -34,12 +34,12 @@ export default function TodoForm({ onAdd, groups, onAddGroup }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Add a new task..."
-          className="flex-1 px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+          className="flex-1 px-3 md:px-4 py-2 md:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
         />
         <select
           value={selectedGroup}
           onChange={(e) => setSelectedGroup(e.target.value)}
-          className="px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm md:text-base"
+          className="px-3 md:px-4 py-2 md:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm md:text-base"
         >
           {groups.map(group => (
             <option key={group} value={group}>{group}</option>
@@ -57,7 +57,7 @@ export default function TodoForm({ onAdd, groups, onAddGroup }) {
         {!showNewGroup ? (
           <button
             onClick={() => setShowNewGroup(true)}
-            className="text-sm md:text-base text-blue-500 hover:text-blue-600 font-medium"
+            className="text-sm md:text-base text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 font-medium"
           >
             + New Group
           </button>
@@ -69,7 +69,7 @@ export default function TodoForm({ onAdd, groups, onAddGroup }) {
               onChange={(e) => setNewGroupName(e.target.value)}
               placeholder="Group name..."
               autoFocus
-              className="flex-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
             <button
               type="submit"
@@ -80,7 +80,7 @@ export default function TodoForm({ onAdd, groups, onAddGroup }) {
             <button
               type="button"
               onClick={() => setShowNewGroup(false)}
-              className="px-3 md:px-4 py-2 md:py-3 text-sm md:text-base bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+              className="px-3 md:px-4 py-2 md:py-3 text-sm md:text-base bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
             >
               Cancel
             </button>
