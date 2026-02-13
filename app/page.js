@@ -64,15 +64,10 @@ export default function Home() {
     setTodos(todos.filter(t => t.group !== groupName));
   };
 
-  const reorderTodos = (group, reorderedIds) => {
-    const groupTodos = todos.filter(t => t.group === group);
-    const otherTodos = todos.filter(t => t.group !== group);
-    
-    const reordered = reorderedIds.map(id => 
-      groupTodos.find(t => t.id === id)
-    );
-    
-    setTodos([...otherTodos, ...reordered]);
+  const updateTodoGroup = (todoId, newGroup) => {
+    setTodos(todos.map(todo =>
+      todo.id == todoId ? { ...todo, group: newGroup } : todo
+    ));
   };
 
   if (loading) {
@@ -93,7 +88,7 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow-lg p-4 md:p-8">
           <div className="mb-6 md:mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">My Tasks</h1>
-            <p className="text-sm md:text-base text-gray-600">Organized by category • Drag to reorder</p>
+            <p className="text-sm md:text-base text-gray-600">Drag tasks between groups</p>
           </div>
 
           <TodoForm onAdd={addTodo} groups={groups} onAddGroup={addGroup} />
@@ -116,7 +111,7 @@ export default function Home() {
             onToggle={toggleTodo}
             onDelete={deleteTodo}
             onDeleteGroup={deleteGroup}
-            onReorder={reorderTodos}
+            onUpdateTodoGroup={updateTodoGroup}
           />
 
           {todos.length === 0 && (
