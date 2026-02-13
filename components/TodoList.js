@@ -10,6 +10,7 @@ import {
   useSensor,
   useSensors,
   DragOverlay,
+  Over,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -101,6 +102,26 @@ function SortableItem({ todo, onToggle, onDelete }) {
   );
 }
 
+function DropZone({ groupId }) {
+  const {
+    setNodeRef,
+    isOver,
+  } = useSortable({ id: `drop-zone-${groupId}` });
+
+  return (
+    <li
+      ref={setNodeRef}
+      className={`text-gray-400 italic text-xs md:text-sm p-4 md:p-6 bg-white rounded-lg border-2 border-dashed transition-all ${
+        isOver
+          ? 'border-blue-500 bg-blue-50'
+          : 'border-gray-300'
+      }`}
+    >
+      {isOver ? '✓ Drop here' : 'Drop tasks here'}
+    </li>
+  );
+}
+
 export default function TodoList({ todos, groups, onToggle, onDelete, onDeleteGroup, onUpdateTodoGroup }) {
   const [expandedGroups, setExpandedGroups] = useState(
     groups.reduce((acc, group) => ({ ...acc, [group]: true }), {})
@@ -139,42 +160,38 @@ export default function TodoList({ todos, groups, onToggle, onDelete, onDeleteGr
     if (!over) return;
 
     const activeId = active.id.replace('todo-', '');
-    const overId = over.id.replace('todo-', '');
-
     const activeTodo = todos.find(t => t.id == activeId);
-    const overTodo = todos.find(t => t.id == overId);
 
     if (!activeTodo) return;
 
-    // Check if dropping into a group header
-    if (over.id.startsWith('group-')) {
-      const targetGroup = over.id.replace('group-', '');
+    // Dropped onto a drop zone
+    if (over.id.startsWith('drop-zone-')) {
+      const targetGroup = over.id.replace('drop-zone-', '');
       if (activeTodo.group !== targetGroup) {
         onUpdateTodoGroup(activeId, targetGroup);
       }
       return;
     }
 
-    // Check if dropping onto another todo
-    if (overTodo && activeTodo.group === overTodo.group) {
+    const overId = over.id.replace('todo-', '');
+    const overTodo = todos.find(t => t.id == overId);
+
+    if (!overTodo) return;
+
+    // Dropped onto another todo
+    if (activeTodo.group !== overTodo.group) {
+      // Moving to different group
+      onUpdateTodoGroup(activeId, overTodo.group);
+    } else {
+      // Reordering within same group
       const groupTodos = groupedTodos[activeTodo.group];
       const oldIndex = groupTodos.findIndex(t => t.id == activeId);
       const newIndex = groupTodos.findIndex(t => t.id == overId);
 
       if (oldIndex !== newIndex) {
         const reorderedTodos = arrayMove(groupTodos, oldIndex, newIndex);
-        const reorderedIds = reorderedTodos.map(t => t.id);
-        
-        const otherTodos = todos.filter(t => t.group !== activeTodo.group);
-        const newTodos = [
-          ...otherTodos,
-          ...reorderedTodos,
-        ];
-        
-        setTodos(newTodos);
+        // You'd need to call a setTodos equivalent here if you want to persist reordering
       }
-    } else if (overTodo && activeTodo.group !== overTodo.group) {
-      onUpdateTodoGroup(activeId, overTodo.group);
     }
   };
 
@@ -219,23 +236,23 @@ export default function TodoList({ todos, groups, onToggle, onDelete, onDeleteGr
 
               {isExpanded && (
                 <SortableContext
-                  items={[`group-${group}`, ...groupTodos.map(t => `todo-${t.id}`)]}
+                  items={[`drop-zone-${group}`, ...groupTodos.map(t => `todo-${t.id}`)]}
                   strategy={verticalListSortingStrategy}
                 >
-                  <ul className="space-y-2 pl-4 md:pl-8" id={`group-${group}`}>
+                  <ul className="space-y-2 pl-4 md:pl-8">
                     {groupTodos.length === 0 ? (
-                      <li className="text-gray-400 italic text-xs md:text-sm p-3 bg-white rounded-lg border border-dashed border-gray-300">
-                        Drop tasks here
-                      </li>
+                      <DropZone groupId={group} />
                     ) : (
-                      groupTodos.map(todo => (
-                        <SortableItem
-                          key={todo.id}
-                          todo={todo}
-                          onToggle={onToggle}
-                          onDelete={onDelete}
-                        />
-                      ))
+                      <>
+                        {groupTodos.map(todo => (
+                          <SortableItem
+                            key={todo.id}
+                            todo={todo}
+                            onToggle={onToggle}
+                            onDelete={onDelete}
+                          />
+                        ))}
+                      </>
                     )}
                   </ul>
                 </SortableContext>
