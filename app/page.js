@@ -64,31 +64,48 @@ export default function Home() {
     setTodos(todos.filter(t => t.group !== groupName));
   };
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  const reorderTodos = (group, reorderedIds) => {
+    const groupTodos = todos.filter(t => t.group === group);
+    const otherTodos = todos.filter(t => t.group !== group);
+    
+    const reordered = reorderedIds.map(id => 
+      groupTodos.find(t => t.id === id)
+    );
+    
+    setTodos([...otherTodos, ...reordered]);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    );
+  }
 
   const totalTodos = todos.length;
   const completedTodos = todos.filter(t => t.completed).length;
   const pendingTodos = totalTodos - completedTodos;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 md:py-8 px-3 md:px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">My Tasks</h1>
-            <p className="text-gray-600">Organized by category</p>
+        <div className="bg-white rounded-lg shadow-lg p-4 md:p-8">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">My Tasks</h1>
+            <p className="text-sm md:text-base text-gray-600">Organized by category • Drag to reorder</p>
           </div>
 
           <TodoForm onAdd={addTodo} groups={groups} onAddGroup={addGroup} />
 
-          <div className="my-6 flex gap-4 text-sm flex-wrap">
-            <div className="bg-blue-50 px-4 py-2 rounded text-blue-900">
+          <div className="my-6 flex gap-2 md:gap-4 text-xs md:text-sm flex-wrap">
+            <div className="bg-blue-50 px-3 md:px-4 py-2 md:py-3 rounded text-blue-900">
               <span className="font-semibold">{totalTodos}</span> total
             </div>
-            <div className="bg-green-50 px-4 py-2 rounded text-green-900">
+            <div className="bg-green-50 px-3 md:px-4 py-2 md:py-3 rounded text-green-900">
               <span className="font-semibold">{completedTodos}</span> done
             </div>
-            <div className="bg-orange-50 px-4 py-2 rounded text-orange-900">
+            <div className="bg-orange-50 px-3 md:px-4 py-2 md:py-3 rounded text-orange-900">
               <span className="font-semibold">{pendingTodos}</span> pending
             </div>
           </div>
@@ -99,11 +116,12 @@ export default function Home() {
             onToggle={toggleTodo}
             onDelete={deleteTodo}
             onDeleteGroup={deleteGroup}
+            onReorder={reorderTodos}
           />
 
           {todos.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No tasks yet. Add one to get started!</p>
+              <p className="text-gray-500 text-base md:text-lg">No tasks yet. Add one to get started!</p>
             </div>
           )}
         </div>
