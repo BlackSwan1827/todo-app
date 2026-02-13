@@ -158,6 +158,11 @@ export default function TodoList({ todos, groups, onToggle, onDelete, onDeleteGr
     setEditingName('');
   };
 
+  const cancelEditGroup = () => {
+    setEditingGroup(null);
+    setEditingName('');
+  };
+
   const groupedTodos = groups.reduce((acc, group) => {
     acc[group] = todos.filter(t => t.group === group);
     return acc;
@@ -215,59 +220,79 @@ export default function TodoList({ todos, groups, onToggle, onDelete, onDeleteGr
 
           return (
             <div key={group} className={`border-l-4 ${colorClasses[color]} p-3 md:p-4 rounded-lg`}>
-              <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
-                <button
-                  onClick={() => toggleGroupExpanded(group)}
-                  className="flex items-center gap-2 md:gap-3 flex-1 text-left min-w-0"
-                >
-                  <span className={`text-lg md:text-xl transition-transform flex-shrink-0 ${isExpanded ? 'rotate-90' : ''}`}>
-                    ▶
-                  </span>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editingName}
-                      onChange={(e) => setEditingName(e.target.value)}
-                      onBlur={saveGroupName}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') saveGroupName();
-                        if (e.key === 'Escape') setEditingGroup(null);
-                      }}
-                      autoFocus
-                      className="flex-1 px-2 py-1 text-base md:text-lg font-semibold rounded border border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  ) : (
-                    <h3 className="text-base md:text-lg font-semibold truncate">{group}</h3>
-                  )}
-                  <span className="text-xs md:text-sm opacity-75 flex-shrink-0">
-                    ({completedCount}/{groupTodos.length})
-                  </span>
-                </button>
-                <div className="flex gap-1 flex-shrink-0">
-                  {!isEditing && (
-                    <button
-                      onClick={() => startEditingGroup(group)}
-                      className={`px-2 md:px-3 py-1 text-xs md:text-sm font-medium rounded transition-colors ${colorButtonClasses[color]}`}
-                      title="Edit group name"
-                    >
-                      ✎
-                    </button>
-                  )}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
                   <button
-                    onClick={() => onDeleteGroup(group)}
-                    className={`px-2 md:px-3 py-1 text-xs md:text-sm font-medium rounded transition-colors ${colorButtonClasses[color]}`}
+                    onClick={() => toggleGroupExpanded(group)}
+                    className="flex items-center gap-2 md:gap-3 flex-1 text-left min-w-0"
                   >
-                    Delete
+                    <span className={`text-lg md:text-xl transition-transform flex-shrink-0 ${isExpanded ? 'rotate-90' : ''}`}>
+                      ▶
+                    </span>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') saveGroupName();
+                          if (e.key === 'Escape') cancelEditGroup();
+                        }}
+                        autoFocus
+                        className="flex-1 px-2 py-1 text-base md:text-lg font-semibold rounded border-2 border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      />
+                    ) : (
+                      <>
+                        <h3 className="text-base md:text-lg font-semibold truncate">{group}</h3>
+                        <span className="text-xs md:text-sm opacity-75 flex-shrink-0">
+                          ({completedCount}/{groupTodos.length})
+                        </span>
+                      </>
+                    )}
                   </button>
+                  <div className="flex gap-1 flex-shrink-0">
+                    {!isEditing && (
+                      <button
+                        onClick={() => startEditingGroup(group)}
+                        className={`px-2 md:px-3 py-1 text-xs md:text-sm font-medium rounded transition-colors ${colorButtonClasses[color]}`}
+                        title="Edit group name"
+                      >
+                        ✎
+                      </button>
+                    )}
+                    <button
+                      onClick={() => onDeleteGroup(group)}
+                      className={`px-2 md:px-3 py-1 text-xs md:text-sm font-medium rounded transition-colors ${colorButtonClasses[color]}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
+
+                {isEditing && (
+                  <div className="flex gap-2 flex-wrap">
+                    <button
+                      onClick={saveGroupName}
+                      className="px-3 py-1 text-xs md:text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={cancelEditGroup}
+                      className="px-3 py-1 text-xs md:text-sm bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors font-medium"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {isExpanded && (
+              {isExpanded && !isEditing && (
                 <SortableContext
                   items={[`drop-zone-${group}`, ...groupTodos.map(t => `todo-${t.id}`)]}
                   strategy={verticalListSortingStrategy}
                 >
-                  <ul className="space-y-2 pl-4 md:pl-8">
+                  <ul className="space-y-2 pl-4 md:pl-8 mt-3">
                     {groupTodos.length === 0 ? (
                       <DropZone groupId={group} />
                     ) : (
