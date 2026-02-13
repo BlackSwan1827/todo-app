@@ -1,1 +1,81 @@
-'use client';\n\nimport { useState, useEffect } from 'react';\nimport TodoForm from '@/components/TodoForm';\nimport TodoList from '@/components/TodoList';\n\nexport default function Home() {\n  const [todos, setTodos] = useState([]);\n  const [loading, setLoading] = useState(true);\n\n  // Load todos from localStorage on mount\n  useEffect(() => {\n    const saved = localStorage.getItem('todos');\n    if (saved) {\n      setTodos(JSON.parse(saved));\n    }\n    setLoading(false);\n  }, []);\n\n  // Save todos to localStorage whenever they change\n  useEffect(() => {\n    if (!loading) {\n      localStorage.setItem('todos', JSON.stringify(todos));\n    }\n  }, [todos, loading]);\n\n  const addTodo = (text) => {\n    const newTodo = {\n      id: Date.now(),\n      text,\n      completed: false,\n      createdAt: new Date().toISOString(),\n    };\n    setTodos([newTodo, ...todos]);\n  };\n\n  const toggleTodo = (id) => {\n    setTodos(todos.map(todo =>\n      todo.id === id ? { ...todo, completed: !todo.completed } : todo\n    ));\n  };\n\n  const deleteTodo = (id) => {\n    setTodos(todos.filter(todo => todo.id !== id));\n  };\n\n  if (loading) return <div className=\"flex items-center justify-center h-screen\">Loading...</div>;\n\n  return (\n    <div className=\"min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4\">\n      <div className=\"max-w-2xl mx-auto\">\n        <div className=\"bg-white rounded-lg shadow-lg p-8\">\n          {/* Header */}\n          <div className=\"mb-8\">\n            <h1 className=\"text-4xl font-bold text-gray-900 mb-2\">My Tasks</h1>\n            <p className=\"text-gray-600\">Stay organized and productive</p>\n          </div>\n\n          {/* Form */}\n          <TodoForm onAdd={addTodo} />\n\n          {/* Stats */}\n          <div className=\"my-6 flex gap-4 text-sm\">\n            <div className=\"bg-blue-50 px-4 py-2 rounded text-blue-900\">\n              <span className=\"font-semibold\">{todos.length}</span> total\n            </div>\n            <div className=\"bg-green-50 px-4 py-2 rounded text-green-900\">\n              <span className=\"font-semibold\">{todos.filter(t => t.completed).length}</span> done\n            </div>\n            <div className=\"bg-orange-50 px-4 py-2 rounded text-orange-900\">\n              <span className=\"font-semibold\">{todos.filter(t => !t.completed).length}</span> pending\n            </div>\n          </div>\n\n          {/* Todo List */}\n          <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />\n\n          {todos.length === 0 && (\n            <div className=\"text-center py-12\">\n              <p className=\"text-gray-500 text-lg\">No tasks yet. Add one to get started!</p>\n            </div>\n          )}\n        </div>\n      </div>\n    </div>\n  );\n}\n
+'use client';
+
+import { useState, useEffect } from 'react';
+import TodoForm from '@/components/TodoForm';
+import TodoList from '@/components/TodoList';
+
+export default function Home() {
+  const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('todos');
+    if (saved) {
+      setTodos(JSON.parse(saved));
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    }
+  }, [todos, loading]);
+
+  const addTodo = (text) => {
+    const newTodo = {
+      id: Date.now(),
+      text,
+      completed: false,
+      createdAt: new Date().toISOString(),
+    };
+    setTodos([newTodo, ...todos]);
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">My Tasks</h1>
+            <p className="text-gray-600">Stay organized and productive</p>
+          </div>
+
+          <TodoForm onAdd={addTodo} />
+
+          <div className="my-6 flex gap-4 text-sm">
+            <div className="bg-blue-50 px-4 py-2 rounded text-blue-900">
+              <span className="font-semibold">{todos.length}</span> total
+            </div>
+            <div className="bg-green-50 px-4 py-2 rounded text-green-900">
+              <span className="font-semibold">{todos.filter(t => t.completed).length}</span> done
+            </div>
+            <div className="bg-orange-50 px-4 py-2 rounded text-orange-900">
+              <span className="font-semibold">{todos.filter(t => !t.completed).length}</span> pending
+            </div>
+          </div>
+
+          <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
+
+          {todos.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No tasks yet. Add one to get started!</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
