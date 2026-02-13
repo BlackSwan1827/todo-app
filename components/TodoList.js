@@ -1,41 +1,44 @@
 'use client';
 
 export default function TodoList({ todos, onToggle, onDelete }) {
-  const sortedTodos = [
-    ...todos.filter(t => !t.completed),
-    ...todos.filter(t => t.completed),
-  ];
-
   return (
-    <div className="space-y-2">
-      {sortedTodos.map(todo => (
-        <div
-          key={todo.id}
-          className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-        >
-          <input
-            type="checkbox"
-            checked={todo.completed}
-            onChange={() => onToggle(todo.id)}
-            className="w-5 h-5 text-blue-600 rounded cursor-pointer"
-          />
-          <span
-            className={`flex-1 ${
-              todo.completed
-                ? 'text-gray-400 line-through'
-                : 'text-gray-900'
-            }`}
+    <ul className="space-y-2">
+      {todos.length === 0 ? (
+        <li className="text-gray-400 italic text-center py-4">
+          No todos yet. Add one to get started!
+        </li>
+      ) : (
+        todos.map(todo => (
+          <li
+            key={todo.id}
+            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            {todo.text}
-          </span>
-          <button
-            onClick={() => onDelete(todo.id)}
-            className="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-all font-medium"
-          >
-            Delete
-          </button>
-        </div>
-      ))}
-    </div>
+            <div className="flex items-center gap-3 flex-1">
+              <input
+                type="checkbox"
+                checked={todo.done}
+                onChange={() => onToggle(todo.id)}
+                className="w-5 h-5 text-blue-500 rounded cursor-pointer"
+              />
+              <span
+                className={`flex-1 ${
+                  todo.done
+                    ? 'line-through text-gray-400'
+                    : 'text-gray-800'
+                }`}
+              >
+                {todo.text}
+              </span>
+            </div>
+            <button
+              onClick={() => onDelete(todo.id)}
+              className="px-3 py-1 text-sm text-red-500 hover:bg-red-50 rounded transition-colors font-medium"
+            >
+              Delete
+            </button>
+          </li>
+        ))
+      )}
+    </ul>
   );
 }
