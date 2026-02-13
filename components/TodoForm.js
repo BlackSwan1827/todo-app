@@ -2,6 +2,34 @@
 
 import { useState } from 'react';
 
+const FUNNY_TODOS = [
+  'Contemplate the meaning of life',
+  'Pet a cat (if you have one)',
+  'Stare at the ceiling for 10 minutes',
+  'Practice your evil laugh',
+  'Eat snacks while pretending to work',
+  'Convince a plant to grow faster',
+  'Have a staring contest with yourself',
+  'Reorganize your bookshelf for no reason',
+  'Teach your pet to do taxes',
+  'Become best friends with your rubber duck',
+  'Question all your life choices',
+  'Learn to walk backwards',
+  'Argue with autocorrect',
+  'Make a sandwich with your eyes closed',
+  'Pretend you\'re in a movie scene',
+  'Find the meaning of "Wednesday"',
+  'Yell at clouds (optional)',
+  'Invent a new dance move',
+  'Talk to plants about their feelings',
+  'Wonder why we park in driveways',
+  'Count how many times you blink today',
+  'Write a poem about socks',
+  'Befriend a cloud',
+  'Try to lick your own elbow',
+  'Make friends with the dust bunnies',
+];
+
 export default function TodoForm({ onAdd, groups, onAddGroup }) {
   const [input, setInput] = useState('');
   const [selectedGroup, setSelectedGroup] = useState(groups[0] || 'Work');
@@ -24,6 +52,11 @@ export default function TodoForm({ onAdd, groups, onAddGroup }) {
       setNewGroupName('');
       setShowNewGroup(false);
     }
+  };
+
+  const addRandomTodo = () => {
+    const randomTodo = FUNNY_TODOS[Math.floor(Math.random() * FUNNY_TODOS.length)];
+    onAdd(randomTodo, selectedGroup);
   };
 
   return (
@@ -50,6 +83,14 @@ export default function TodoForm({ onAdd, groups, onAddGroup }) {
           className="px-4 md:px-6 py-2 md:py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-sm md:text-base"
         >
           Add
+        </button>
+        <button
+          type="button"
+          onClick={addRandomTodo}
+          className="px-3 md:px-4 py-2 md:py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors font-medium text-sm md:text-base"
+          title="Add a funny random todo"
+        >
+          🎲
         </button>
       </form>
 
